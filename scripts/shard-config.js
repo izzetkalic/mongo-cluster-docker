@@ -1,0 +1,14 @@
+var mongodb11 = "mongo-1-1";
+var mongodb12 = "mongo-1-2";
+var mongodb13 = "mongo-1-3";
+var mongodb21 = "mongo-2-1";
+var mongodb22 = "mongo-2-2";
+var mongodb23 = "mongo-2-3";
+var RS1 = "rs1";
+var RS2 = "rs2";
+var port = "27017";
+use admin;
+db.auth("admin","admin");
+sh.addShard(`${RS1}/${mongodb11}:${port},${mongodb12}:${port},${mongodb13}:${port}`);
+sh.addShard(`${RS2}/${mongodb21}:${port},${mongodb22}:${port},${mongodb23}:${port}`);
+sh.status();

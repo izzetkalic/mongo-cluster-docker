@@ -1,16 +1,38 @@
 # mongo-cluster-docker
 
-This is a simple 3 node replica mongodb setup based on official `mongo` docker image using `docker-compose` described in my blogpost at https://warzycha.pl/mongo-db-sharding-docker-example/.
+This is a fork of the simple 3 node replica mongodb setup that is located in [this](https://github.com/senssei/mongo-cluster-docker) project and it is created to activate access control.
 
 For details description, steps and discussion go to:
 
 1. https://warzycha.pl/mongo-db-sharding-docker-example/
 2. https://warzycha.pl/mongo-db-shards-by-location/
 
+# Before Starting
+
+Open `/scripts/create-user.js` and change user informations as you like. After that you should change `db.auth()` in the `/scripts/shard-config.js`. You can propagate users in `create-user.js` but at least one user should be defined with `userAdminAnyDatabase` role in order to activate access control.
+
+## IMPORTANT
+
+The key-file should be recreated and replaced with `/scripts/mongo-keyfile`. You can recreate and give access with the following code;
+
+```
+openssl rand -base64 756 > <path-to-keyfile>
+chmod 600 <path-to-keyfile>
+chown 999 <path-to-keyfile>
+```
+chmod is 400 in the original document but should be 600 since we create it outside of the container also run the chown command.
+
 # Run
 
 ```
-docker-compose -f docker-compose.1.yml -f docker-compose.2.yml  -f docker-compose.cnf.yml -f docker-compose.shard.yml up
+docker-compose -f docker-compose.1.yml -f docker-compose.2.yml  -f docker-compose.cnf.yml -f docker-compose.shard.yml up -d
+```
+
+Wait for a while until containers up then execute following file;
+
+```
+cd scripts/
+./start.sh
 ```
 
 # Tests
@@ -85,6 +107,9 @@ Basically `mongosetup` service is now splitted to multiple `yml` files. :)
 * https://docs.docker.com/compose/startup-order/
 * http://stackoverflow.com/questions/31138631/configuring-mongodb-replica-set-from-docker-compose
 * https://github.com/soldotno/elastic-mongo/blob/master/docker-compose.yml
+
+* https://towardsdatascience.com/how-to-deploy-a-mongodb-replica-set-using-docker-6d0b9ac00e49
+* https://docs.mongodb.com/manual/tutorial/deploy-sharded-cluster-with-keyfile-access-control/
 
 See more @ `ENV.md`
 
